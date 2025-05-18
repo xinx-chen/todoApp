@@ -1,0 +1,23 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/todoappdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root # 替换
+    password: root # 替换
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+
+
+
+logging:
+  level:
+    com.example.todolistbackend.mapper: debug # 更精细地控制SQL日志输出，显示mapper接口的执行SQL
