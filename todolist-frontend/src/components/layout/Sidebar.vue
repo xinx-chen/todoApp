@@ -1,12 +1,5 @@
 <template>
   <div class="sidebar-sticky pt-3">
-    <!-- 迷你日历组件 -->
-    <div class="sidebar-calendar mb-3">
-      <MiniCalendar />
-    </div>
-    
-    
-    <!-- 导航菜单 -->
     <ul class="nav flex-column">
       <li class="nav-item">
         <router-link class="nav-link" to="/home" exact-active-class="active">
@@ -18,12 +11,6 @@
         <router-link class="nav-link" to="/todos" active-class="active">
           <i class="bi bi-list-check me-2"></i>
           待办事项
-        </router-link>
-      </li>
-      <li class="nav-item">
-        <router-link class="nav-link" to="/calendar" active-class="active">
-          <i class="bi bi-calendar3 me-2"></i>
-          日历视图
         </router-link>
       </li>
       <li class="nav-item">
@@ -43,7 +30,7 @@
 </template>
 
 <script setup>
-import MiniCalendar from '../calendar/MiniCalendar.vue';
+// 移除了 filterTodos 相关代码
 </script>
 
 <style scoped>
@@ -54,27 +41,6 @@ import MiniCalendar from '../calendar/MiniCalendar.vue';
   padding-top: 0.5rem;
   overflow-x: hidden;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.sidebar-calendar {
-  flex-shrink: 0;
-  margin: 0 5px;
-}
-.sidebar-sticky {
-  position: sticky;
-  top: 0;
-  height: calc(100vh - 48px);
-  padding-top: 0.5rem;
-  overflow-x: hidden;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.sidebar-calendar {
-  flex-shrink: 0;
 }
 
 .sidebar .nav-link {
@@ -94,4 +60,6 @@ import MiniCalendar from '../calendar/MiniCalendar.vue';
   color: #3498db;
   background-color: rgba(52, 152, 219, 0.1);
 }
+
+/* 移除了不再需要的样式 */
 </style>

@@ -6,7 +6,6 @@ import RegisterView from '../views/RegisterView.vue'
 import TodosView from '../views/TodosView.vue'
 import CategoriesView from '../views/CategoriesView.vue'
 import TagsView from '../views/TagsView.vue'
-import CalendarView from '../views/CalendarView.vue'  // 导入日历视图
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,12 +46,6 @@ const router = createRouter({
       path: '/tags',
       name: 'tags',
       component: TagsView,
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/calendar',  // 添加日历路由
-      name: 'calendar',
-      component: CalendarView,
       meta: { requiresAuth: true }
     }
   ]
