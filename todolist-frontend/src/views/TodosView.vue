@@ -169,10 +169,28 @@ const closeModal = () => {
   editingTodo.value = null;
 };
 </script>
-
 <style scoped>
 .todos-view {
   padding-bottom: 30px;
+}
+
+/* 操作按钮样式 */
+.todo-actions .btn {
+  min-width: 70px;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 6px;
+}
+
+.todo-actions .btn i {
+  font-size: 14px;
+}
+
+/* 更大的按钮 */
+.todo-actions .btn-lg-custom {
+  min-width: 80px;
+  padding: 10px 20px;
+  font-size: 15px;
 }
 
 .empty-state {
@@ -198,3 +216,4 @@ const closeModal = () => {
   border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 </style>
+
