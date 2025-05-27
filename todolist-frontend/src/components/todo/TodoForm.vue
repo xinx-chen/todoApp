@@ -85,7 +85,7 @@
     </div>
     
     <div class="d-flex justify-content-end gap-2">
-      <button type="button" class="btn btn-secondary" @click="$emit('cancel')">取消</button>
+      <button type="button" class="btn btn-secondary" @click="handleCancel">取消</button>
       <button type="submit" class="btn btn-primary" :disabled="loading">
         <span v-if="loading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
         保存
@@ -119,6 +119,17 @@ const form = ref({
   notes: '',
   tagIds: []
 })
+
+// 在 script setup 部分添加验证逻辑
+const validateForm = () => {
+  if (!form.value.description.trim()) {
+    return { valid: false, message: '描述不能为空' }
+  }
+  if (!form.value.targetDate) {
+    return { valid: false, message: '目标日期不能为空' }
+  }
+  return { valid: true }
+}
 
 // 当编辑现有待办事项时，填充表单
 onMounted(() => {
@@ -165,6 +176,13 @@ watch(() => props.todo, (newTodo) => {
 }, { deep: true })
 
 const handleSubmit = async () => {
+  // 验证表单
+  const validation = validateForm()
+  if (!validation.valid) {
+    alert(validation.message)
+    return
+  }
+  
   loading.value = true
   try {
     // 格式化数据以符合后端API要求
@@ -172,7 +190,7 @@ const handleSubmit = async () => {
       description: form.value.description,
       done: form.value.done,
       targetDate: form.value.targetDate,
-      username: props.username, // 确保username被设置
+      username: props.username,
       categoryId: form.value.categoryId || null,
       priority: form.value.priority,
       reminderTime: form.value.reminderTime || null,
@@ -181,9 +199,35 @@ const handleSubmit = async () => {
     }
     
     emit('submit', todoData)
+    
+    // 如果不是编辑模式，则重置表单
+    if (!props.todo) {
+      resetForm()
+    }
   } finally {
     loading.value = false
   }
+}
+
+const resetForm = () => {
+  form.value = {
+    description: '',
+    done: false,
+    targetDate: format(new Date(), 'yyyy-MM-dd'),
+    username: props.username,
+    categoryId: '',
+    priority: 0,
+    reminderTime: '',
+    notes: '',
+    tagIds: []
+  }
+}
+
+const handleCancel = () => {
+  if (!props.todo) {
+    resetForm()
+  }
+  emit('cancel')
 }
 
 // 将日期时间格式化为HTML datetime-local输入所需的格式

@@ -149,13 +149,13 @@ const deleteTodo = async () => {
 const saveTodo = async (todoData) => {
   try {
     if (editingTodo.value) {
-      await todoStore.updateTodo(editingTodo.value.id, todoData);
+      await todoStore.updateTodo(editingTodo.value.id, todoData)
     } else {
-      await todoStore.createTodo(todoData);
+      await todoStore.createTodo(todoData)
     }
-    closeModal();
+    closeModal()
   } catch (error) {
-    console.error('保存待办事项失败', error);
+    console.error('保存待办事项失败', error)
   }
 };
 

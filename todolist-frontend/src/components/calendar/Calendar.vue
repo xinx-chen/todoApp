@@ -47,22 +47,33 @@
           </div>
         </div>
         <div class="month-body">
-          <div 
-            v-for="day in monthDays" 
-            :key="day.key" 
-            class="month-day" 
-            :class="{ 
-              'other-month': !day.isCurrentMonth, 
-              'today': day.isToday,
-              'has-holiday': isHoliday(day.fullDate)
-            }"
-            @click="selectDay(day.fullDate)"
-          >
-            <div class="day-number">{{ day.date }}</div>
-            <div v-if="isHoliday(day.fullDate)" class="holiday-marker">
-              {{ getHolidayName(day.fullDate) }}
-            </div>
+        <div 
+          v-for="day in monthDays" 
+          :key="day.key" 
+          class="month-day" 
+          :class="{ 
+            'other-month': !day.isCurrentMonth, 
+            'today': day.isToday,
+            'has-holiday': isHoliday(day.fullDate)
+          }"
+          @click="selectDay(day.fullDate)"
+        >
+          <div class="day-number">{{ day.date }}</div>
+          <div v-if="isHoliday(day.fullDate)" class="holiday-marker">
+            {{ getHolidayName(day.fullDate) }}
           </div>
+          <!-- 添加待办事项显示 -->
+          <div class="todo-items" v-if="getTodosForDate(day.fullDate).length > 0">
+            <div
+            v-for="todo in getTodosForDate(day.fullDate)"
+            :key="todo.id"
+            class="todo-item"
+            :class="`priority-${todo.priority}`"
+          >
+            {{ todo.description }}
+          </div>
+          </div>
+        </div>
         </div>
       </div>
     </div>
@@ -77,21 +88,33 @@
       </div>
       <div class="week-body">
         <div class="day-column" v-for="day in weekDays" :key="day.key">
-          <div 
-            class="day-content" 
-            :class="{ 
-              'today': day.isToday, 
-              'has-holiday': isHoliday(day.fullDate)
-            }"
-            @click="selectDay(day.fullDate)"
-          >
-            <div v-if="isHoliday(day.fullDate)" class="holiday-item">
-              {{ getHolidayName(day.fullDate) }}
-            </div>
-            <div v-else class="no-events">
-              无事
-            </div>
+        <!-- 修改day-content部分 -->
+        <div 
+          class="day-content" 
+          :class="{ 
+            'today': day.isToday, 
+            'has-holiday': isHoliday(day.fullDate)
+          }"
+          @click="selectDay(day.fullDate)"
+        >
+          <div v-if="isHoliday(day.fullDate)" class="holiday-item">
+            {{ getHolidayName(day.fullDate) }}
           </div>
+          <!-- 添加待办事项显示 -->
+          <div class="todo-items" v-if="getTodosForDate(day.fullDate).length > 0">
+            <div
+            v-for="todo in getTodosForDate(day.fullDate)"
+            :key="todo.id"
+            class="todo-item"
+            :class="`priority-${todo.priority}`"
+          >
+            {{ todo.description }}
+          </div>
+          </div>
+          <div v-else class="no-events">
+            无事
+          </div>
+        </div>
         </div>
       </div>
     </div>
@@ -101,12 +124,24 @@
       <div class="day-header">
         <h5>{{ formattedSelectedDate }}</h5>
       </div>
+      <!-- 修改day-body部分 -->
       <div class="day-body">
         <div v-if="isHoliday(selectedDate)" class="holiday-detail">
           <div class="holiday-title">{{ getHolidayName(selectedDate) }}</div>
           <div class="holiday-description">
             {{ getHolidayDescription(selectedDate) }}
           </div>
+        </div>
+        <div class="todos-list" v-if="getTodosForDate(selectedDate).length > 0">
+          <h6>待办事项</h6>
+          <div
+          v-for="todo in getTodosForDate(selectedDate)"
+          :key="todo.id"
+          class="todo-item"
+          :class="`priority-${todo.priority}`"
+        >
+          {{ todo.description }}
+        </div>
         </div>
         <div v-else class="no-holiday">
           <p>{{ formattedSelectedDate }} 无事</p>
@@ -425,6 +460,54 @@ onMounted(async () => {
   
   // 设置默认视图为月视图
   viewType.value = 'month';
+});
+
+// 在script setup部分添加以下代码
+
+// 获取当前用户的所有待办事项
+const todos = ref([]);
+
+// 获取指定日期的待办事项
+const getTodosForDate = (date) => {
+  if (!date) return [];
+  
+  const dateStr = date.toISOString().split('T')[0];
+  return todos.value.filter(todo => todo.targetDate === dateStr);
+};
+
+// 获取当前用户的待办事项
+const fetchTodos = async () => {
+  try {
+    await todoStore.fetchTodos(authStore.user.username);
+    console.log('待办事项获取成功:', todoStore.todos);
+    todos.value = todoStore.todos;
+  } catch (error) {
+    console.error('获取待办事项失败:', error);
+  }
+};
+
+
+// 监听selectedDate变化，当切换到日视图时获取待办事项
+watch([selectedDate, viewType], ([newDate, newViewType]) => {
+  if (newViewType === 'day') {
+    fetchTodos();
+  }
+}, { immediate: true });
+
+// 在onMounted中添加
+onMounted(async () => {
+  // 如果有初始日期，使用它，否则使用今天
+  if (props.initialDate) {
+    selectedDate.value = props.initialDate;
+  } else {
+    selectedDate.value = new Date();
+  }
+  
+  // 设置默认视图为月视图
+  viewType.value = 'month';
+  
+  // 获取初始待办事项
+  await fetchTodos();
 });
 </script>
 
@@ -756,5 +839,85 @@ onMounted(async () => {
 .hour-content {
   flex: 1;
   padding: 10px;
+}
+/* 添加以下样式 */
+
+.todo-items {
+  margin-top: 5px;
+}
+
+.todo-item {
+  font-size: 0.8rem;
+  padding: 3px 6px;
+  margin-bottom: 3px;
+  background-color: rgba(52, 152, 219, 0.1);
+  border-radius: 3px;
+  color: #3498db;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.todos-list {
+  margin-bottom: 20px;
+}
+
+.todos-list h6 {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.todos-list .todo-item {
+  padding: 10px;
+  margin-bottom: 8px;
+  background-color: #f8f9fa;
+  border-left: 3px solid #3498db;
+  font-size: 1rem;
+}
+/* 添加优先级样式 */
+.todo-item.priority-0 {
+  background-color: #e0e0e0;
+  color: #666;
+  border-left-color: #bdbdbd !important;
+}
+
+.todo-item.priority-1 {
+  background-color: rgba(52, 152, 219, 0.1);
+  color: #3498db;
+  border-left-color: #3498db !important;
+}
+
+.todo-item.priority-2 {
+  background-color: rgba(255, 165, 0, 0.1);
+  color: #ff8c00;
+  border-left-color: #ff8c00 !important;
+}
+
+.todo-item.priority-3 {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+  border-left-color: #e74c3c !important;
+}
+
+/* 更新日视图中的待办事项样式 */
+.todos-list .todo-item.priority-0 {
+  background-color: #f8f9fa;
+  border-left: 3px solid #bdbdbd;
+}
+
+.todos-list .todo-item.priority-1 {
+  background-color: #f8f9fa;
+  border-left: 3px solid #3498db;
+}
+
+.todos-list .todo-item.priority-2 {
+  background-color: #f8f9fa;
+  border-left: 3px solid #ff8c00;
+}
+
+.todos-list .todo-item.priority-3 {
+  background-color: #f8f9fa;
+  border-left: 3px solid #e74c3c;
 }
 </style>
