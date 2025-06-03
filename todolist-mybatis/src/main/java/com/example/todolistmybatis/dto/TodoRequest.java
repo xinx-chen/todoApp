@@ -13,5 +13,6 @@ public class TodoRequest {
     private Integer priority;
     private String reminderTime;
     private String notes;
+    private String imageUrl; // 添加 imageUrl 字段，用于存储图片链接
     private List<Long> tagIds;
 }

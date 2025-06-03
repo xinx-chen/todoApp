@@ -8,19 +8,21 @@ import com.example.todolistmybatis.mapper.TodoMapper;
 import com.example.todolistmybatis.service.CategoryService;
 import com.example.todolistmybatis.service.TagService;
 import com.example.todolistmybatis.service.TodoService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 public class TodoServiceImpl extends ServiceImpl<TodoMapper, Todo> implements TodoService {
 
@@ -67,6 +69,12 @@ public class TodoServiceImpl extends ServiceImpl<TodoMapper, Todo> implements To
             queryWrapper.like("description", filters.get("search"));
         }
 
+        if (filters.containsKey("showTodayOnly")) {
+            String targetDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+            log.info("Attempting to filter by date: {}", targetDate);  // 添加日志
+            queryWrapper.apply("target_date = {0}", targetDate);  // 改用apply方法
+        }
+
         List<Todo> todos = this.baseMapper.selectList(queryWrapper);
 
         // 如果有标签过滤，需要在内存中过滤
@@ -110,9 +118,27 @@ public class TodoServiceImpl extends ServiceImpl<TodoMapper, Todo> implements To
     @Override
     @Transactional
     public Todo update(Long id, Todo todo, List<Long> tagIds) {
-        todo.setId(id);
-        this.baseMapper.updateById(todo);
+        // 1. 查询完整实体
+        Todo existingTodo = getById(id);
 
+        // 2. 手动处理 imageUrl（关键修改）
+        if (todo.getImageUrl() == null) {
+            existingTodo.setImageUrl(null); // 强制设置为 null
+        }
+
+        // 3. 复制其他属性（跳过关键字段）
+        BeanUtils.copyProperties(todo, existingTodo, "id", "createdAt", "updatedAt");
+
+        // 4. 使用 updateById 时强制更新所有字段（包括 null 值）
+        this.baseMapper.updateById(existingTodo); // 默认行为不会更新 null 字段
+
+        // 5. 使用 update 方法强制更新
+        this.lambdaUpdate()
+                .eq(Todo::getId, id)
+                .set(Todo::getImageUrl, existingTodo.getImageUrl()) // 显式设置 null
+                .update();
+
+        // 6. 处理标签
         if (tagIds != null) {
             tagService.assignTagsToTodo(id, tagIds);
         }

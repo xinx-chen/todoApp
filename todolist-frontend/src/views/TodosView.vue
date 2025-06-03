@@ -146,18 +146,19 @@ const deleteTodo = async () => {
   }
 };
 
-const saveTodo = async (todoData) => {
+const saveTodo = async (formData) => {
   try {
     if (editingTodo.value) {
-      await todoStore.updateTodo(editingTodo.value.id, todoData)
+      await todoStore.updateTodo(editingTodo.value.id, formData)
     } else {
-      await todoStore.createTodo(todoData)
+      await todoStore.createTodo(formData)
     }
     closeModal()
   } catch (error) {
+    closeModal()
     console.error('保存待办事项失败', error)
   }
-};
+}
 
 const toggleTodoStatus = async (todo) => {
   const updatedTodo = { ...todo, done: !todo.done };

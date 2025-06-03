@@ -124,14 +124,29 @@ const isFormValid = computed(() => {
 const handleRegister = async () => {
   if (!isFormValid.value) return;
   
-  const success = await authStore.register({
-    username: username.value,
-    email: email.value,
-    password: password.value
-  });
-  
-  if (success) {
-    router.push('/login');
+  try {
+    // 调用注册方法
+    const success = await authStore.register({
+      username: username.value,
+      email: email.value,
+      password: password.value
+    });
+
+    // 注册成功后跳转到登录页
+    if (success) {
+      router.push('/login');
+    }
+  } catch (error) {
+    // 处理错误信息
+    if (error instanceof Error) {
+      
+      // 使用UI框架的通知组件
+      message.error(error.message);
+
+    } else {
+      // 处理非Error对象的异常
+      errorMessage.value = '注册失败，请稍后再试';
+    }
   }
 };
 </script>

@@ -29,6 +29,7 @@ public class Todo {
     private String notes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String imageUrl;
 
     @TableField(exist = false)
     private Category category;

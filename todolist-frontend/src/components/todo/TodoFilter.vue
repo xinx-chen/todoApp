@@ -5,6 +5,22 @@
         <i class="bi bi-funnel me-2"></i>
         筛选待办事项
       </h5>
+      <!-- 显示今日待办 -->
+      <div class="mb-3 form-check">
+        <input 
+          type="checkbox" 
+          class="form-check-input" 
+          id="showTodayOnly" 
+          v-model="filters.showTodayOnly"
+        >
+        <label class="form-check-label">
+          <i class="bi bi-calendar-check me-1"></i>
+          仅显示今日待办
+          <span v-if="filters.showTodayOnly" class="badge bg-success ms-2">
+            {{ format(new Date(), 'yyyy-MM-dd') }}
+          </span>
+        </label>
+      </div>
       <div class="row">
         <div class="col-md-3 mb-3">
           <label class="form-label">状态</label>
@@ -77,7 +93,8 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
+import { format } from 'date-fns'
 
 const props = defineProps({
   categories: Array,
@@ -91,19 +108,19 @@ const filters = ref({
   categoryId: '',
   priority: '',
   tagId: '',
-  search: ''
+  search: '',
+  showTodayOnly: false
 })
 
 const applyFilters = () => {
-  // 创建一个新对象，只包含有值的过滤条件
-  const activeFilters = {}
-  
-  if (filters.value.done !== '') activeFilters.done = filters.value.done
-  if (filters.value.categoryId) activeFilters.categoryId = filters.value.categoryId
-  if (filters.value.priority) activeFilters.priority = filters.value.priority
-  if (filters.value.tagId) activeFilters.tagId = filters.value.tagId
-  if (filters.value.search) activeFilters.search = filters.value.search
-  
+  const activeFilters = {
+    ...(filters.value.done !== '' && { done: filters.value.done }),
+    ...(filters.value.categoryId && { categoryId: filters.value.categoryId }),
+    ...(filters.value.priority && { priority: filters.value.priority }),
+    ...(filters.value.tagId && { tagId: filters.value.tagId }),
+    ...(filters.value.search && { search: filters.value.search }),
+    ...(filters.value.showTodayOnly && { showTodayOnly: true })
+  }
   emit('filter-change', activeFilters)
 }
 
@@ -113,7 +130,8 @@ const resetFilters = () => {
     categoryId: '',
     priority: '',
     tagId: '',
-    search: ''
+    search: '',
+    showTodayOnly: false
   }
   emit('filter-change', {})
 }
@@ -123,5 +141,24 @@ const resetFilters = () => {
 .filter-card {
   background-color: #f8f9fa;
   border: none;
+}
+.form-check-label[for="showTodayOnly"] {
+  font-weight: 500;
+  color: #2c3e50;
+}
+.form-check-input:checked[type="checkbox"]#showTodayOnly {
+  background-color: #3498db;
+  border-color: #3498db;
+}
+/* 选中状态更明显 */
+.form-check-input:checked[type="checkbox"] {
+  background-color: var(--bs-success);
+  border-color: var(--bs-success);
+}
+
+/* 日期标记样式 */
+.badge {
+  font-size: 0.75em;
+  font-weight: normal;
 }
 </style>

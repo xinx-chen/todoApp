@@ -12,8 +12,7 @@ api.interceptors.request.use(
   config => {
     const user = JSON.parse(localStorage.getItem('user'))
     if (user) {
-      // 如果需要认证令牌，可以在这里添加
-      // config.headers.Authorization = `Bearer ${user.token}`
+      config.headers.Authorization = `Bearer ${user.token}`
     }
     return config
   },
@@ -30,6 +29,7 @@ api.interceptors.response.use(
   error => {
     if (error.response && error.response.status === 401) {
       // 未授权，清除用户信息并重定向到登录页
+      alert('登录已过期，请重新登录')
       localStorage.removeItem('user')
       window.location.href = '/login'
     }

@@ -57,7 +57,7 @@ const router = createRouter({
       name: 'calendar',
       component: CalendarView,
       meta: { requiresAuth: true }
-   }
+    }
   ]
 })
 
@@ -65,13 +65,12 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   let user = null;
-  
+
   try {
     const userStr = localStorage.getItem('user');
-    console.log('localStorage user:', userStr);
-    
+
     // 检查是否为有效的用户对象
-    if (userStr && userStr !== "登录成功") {
+    if (userStr) {
       user = JSON.parse(userStr);
       // 验证用户对象是否有效
       if (!user || typeof user !== 'object' || !user.username) {
@@ -87,10 +86,10 @@ router.beforeEach((to, from, next) => {
     localStorage.removeItem('user');
     user = null;
   }
-  
+
   console.log('Parsed user:', user);
   console.log('Target path:', to.path);
-  
+
   if (to.matched.some(record => record.meta.requiresAuth) && !user) {
     console.log('Redirecting to login: protected route and no user');
     next('/login');

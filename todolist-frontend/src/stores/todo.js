@@ -9,7 +9,7 @@ export const useTodoStore = defineStore('todo', () => {
   const reminders = ref([])
   const loading = ref(false)
   const error = ref(null)
-  
+
   async function fetchTodos(username, filters = {}) {
     try {
       loading.value = true
@@ -23,7 +23,7 @@ export const useTodoStore = defineStore('todo', () => {
       loading.value = false
     }
   }
-  
+
   async function fetchTodoById(id) {
     try {
       loading.value = true
@@ -37,7 +37,7 @@ export const useTodoStore = defineStore('todo', () => {
       loading.value = false
     }
   }
-  
+
   async function createTodo(todoData) {
     try {
       loading.value = true
@@ -53,7 +53,7 @@ export const useTodoStore = defineStore('todo', () => {
       loading.value = false
     }
   }
-  
+
   async function updateTodo(id, todoData) {
     try {
       loading.value = true
@@ -72,7 +72,7 @@ export const useTodoStore = defineStore('todo', () => {
       loading.value = false
     }
   }
-  
+
   async function deleteTodo(id) {
     try {
       loading.value = true
@@ -86,7 +86,7 @@ export const useTodoStore = defineStore('todo', () => {
       loading.value = false
     }
   }
-  
+
   async function fetchStatistics(username) {
     try {
       loading.value = true
@@ -98,7 +98,7 @@ export const useTodoStore = defineStore('todo', () => {
       loading.value = false
     }
   }
-  
+
   async function fetchReminders(username) {
     try {
       loading.value = true
@@ -110,7 +110,7 @@ export const useTodoStore = defineStore('todo', () => {
       loading.value = false
     }
   }
-  
+
   return {
     todos,
     currentTodo,
