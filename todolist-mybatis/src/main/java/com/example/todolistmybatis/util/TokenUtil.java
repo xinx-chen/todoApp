@@ -19,18 +19,17 @@ public class TokenUtil {
      */
     public String getToken(String userId) {
         //这个是放到负载payLoad 里面,魔法值可以使用常量类进行封装.
-        String token = JWT
+        return JWT
                 .create()
                 .withClaim("userId" ,userId)
                 .withClaim("timeStamp", System.currentTimeMillis())
                 .sign(Algorithm.HMAC256(secretKey));
-        return token;
     }
     /**
      * 解析token.
      */
     public Map<String, String> parseToken(String token) {
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
         DecodedJWT decodedjwt = JWT.require(Algorithm.HMAC256(secretKey))
                 .build().verify(token);
         Claim userId = decodedjwt.getClaim("userId");

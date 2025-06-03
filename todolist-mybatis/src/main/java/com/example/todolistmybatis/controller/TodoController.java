@@ -7,8 +7,6 @@ import com.example.todolistmybatis.entity.Todo;
 import com.example.todolistmybatis.service.TodoService;
 import com.example.todolistmybatis.util.ImageUploadUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;  // 修改为正确的 SLF4J 导入
-import org.slf4j.LoggerFactory;  // 修改为正确的 SLF4J 导入
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,8 +27,6 @@ import java.util.Map;
 @RequestMapping("/api/todos")
 @CrossOrigin(origins = "http://localhost:8081")
 public class TodoController {
-
-    private static final Logger logger = LoggerFactory.getLogger(TodoController.class);  // 添加日志记录器
 
     @Autowired
     private TodoService todoService;

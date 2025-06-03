@@ -34,7 +34,7 @@ public class AuthHandlerInterceptor implements HandlerInterceptor {
         }
         //为空就返回错误
         String token = httpServletRequest.getHeader("Authorization").replace("Bearer ", "");
-        if (null == token || "".equals(token.trim())) {
+        if (token == null || token.isEmpty()) {
             return false;
         }
         Map<String, String> map = tokenUtil.parseToken(token);
