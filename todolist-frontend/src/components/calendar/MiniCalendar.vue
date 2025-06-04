@@ -31,7 +31,7 @@
       </div>
     </div>
     <div class="calendar-footer">
-      <router-link to="/calendar" class="view-full-calendar">
+      <router-link to="/calendar" class="view-full-calendar text-primary">
         查看完整日历
       </router-link>
     </div>
@@ -310,9 +310,8 @@ onMounted(() => {
 }
 
 .view-full-calendar {
-  color: #3498db;
   text-decoration: none;
-  font-size: 12px;
+  font-size: 16px;
 }
 
 .view-full-calendar:hover {

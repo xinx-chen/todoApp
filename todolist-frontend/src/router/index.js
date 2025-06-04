@@ -7,8 +7,7 @@ import TodosView from '../views/TodosView.vue'
 import CategoriesView from '../views/CategoriesView.vue'
 import TagsView from '../views/TagsView.vue'
 import CalendarView from '../views/CalendarView.vue'  // 导入日历视图
-
-
+import StatisticsView from '../views/StatisticsView.vue'  // 导入统计视图
 
 
 const router = createRouter({
@@ -57,6 +56,12 @@ const router = createRouter({
       name: 'calendar',
       component: CalendarView,
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/statistics',  // 添加统计视图路由
+      name: 'statistics',
+      component: StatisticsView,
+      meta: { requiresAuth: true }
     }
   ]
 })
@@ -86,9 +91,6 @@ router.beforeEach((to, from, next) => {
     localStorage.removeItem('user');
     user = null;
   }
-
-  console.log('Parsed user:', user);
-  console.log('Target path:', to.path);
 
   if (to.matched.some(record => record.meta.requiresAuth) && !user) {
     console.log('Redirecting to login: protected route and no user');

@@ -192,11 +192,6 @@ const validateForm = () => {
   const targetDate = new Date(form.value.targetDate)
   targetDate.setHours(0, 0, 0, 0)
   
-  // 目标日期不能早于今天
-  if (targetDate < today) {
-    return { valid: false, message: '目标日期不能早于今天' }
-  }
-  
   // 如果设置了提醒时间
   if (form.value.reminderTime) {
     const reminderDate = new Date(form.value.reminderTime)
@@ -207,12 +202,6 @@ const validateForm = () => {
     if (reminderDate > maxReminderDate) {
       return { valid: false, message: '提醒时间不能晚于目标日期' }
     }
-    
-    // 提醒时间不能早于当前时间（可选）
-    const now = new Date()
-    if (reminderDate < now) {
-      return { valid: false, message: '提醒时间不能早于当前时间' }
-    }
   }
   
   return { valid: true }
@@ -222,8 +211,16 @@ const validateForm = () => {
 const handleImageSelect = (event) => {
   const file = event.target.files[0]
   if (!file) return
-
-  // 验证逻辑...
+  // 检查文件类型
+  if (!file.type.startsWith('image/')) {
+    alert('请选择有效的图片文件', 'error')
+    return
+  }
+  // 检查文件大小（限制为5MB）
+  if (file.size > 5 * 1024 * 1024) {
+    alert('图片大小不能超过5MB', 'error')
+    return
+  }
   
   const reader = new FileReader()
   reader.onload = (e) => {
@@ -304,7 +301,7 @@ watch(() => props.username, (newUsername) => {
 const handleSubmit = async () => {
   const validation = validateForm()
   if (!validation.valid) {
-    showToast(validation.message, 'error')
+    alert(validation.message, 'error')
     return
   }
   
@@ -366,7 +363,8 @@ const resetForm = () => {
     tagIds: [],
     imageUrl: null,
     imagePreview: null,
-    imageFile: null
+    imageFile: null,
+    imageRemoved: false
   }
   if (fileInput.value) {
     fileInput.value.value = ''
@@ -374,10 +372,10 @@ const resetForm = () => {
 }
 
 const handleCancel = () => {
-  if (!props.todo) {
+  if (confirm('确定要取消编辑吗？未保存的更改将会丢失。')) {
     resetForm()
+    emit('cancel')
   }
-  emit('cancel')
 }
 
 // 将日期时间格式化为HTML datetime-local输入所需的格式

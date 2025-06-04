@@ -2,7 +2,7 @@
   <MainLayout>
     <div class="todos-view">
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>待办事项</h1>
+        <h2 class="page-title"><i class="bi bi-list-check me-2"></i>待办管理</h2>
         <button class="btn btn-primary" @click="showAddModal = true">
           <i class="bi bi-plus-lg me-1"></i> 创建待办事项
         </button>
@@ -143,6 +143,7 @@ const deleteTodo = async () => {
     await todoStore.deleteTodo(todoToDelete.value.id);
     showDeleteModal.value = false;
     todoToDelete.value = null;
+    await todoStore.fetchReminders(authStore.user.username);
   }
 };
 
@@ -153,6 +154,7 @@ const saveTodo = async (formData) => {
     } else {
       await todoStore.createTodo(formData)
     }
+    await todoStore.fetchReminders(authStore.user.username);
     closeModal()
   } catch (error) {
     closeModal()
@@ -215,6 +217,11 @@ const closeModal = () => {
 
 .modal-footer {
   border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.page-title {
+  font-weight: 600;
+  color: #2c3e50;
 }
 </style>
 
