@@ -21,6 +21,10 @@ import java.util.Map;
 public class ImageUploadUtil {
     @Value("${imgbb.api.key}") // 从配置文件中读取ImgBB API Key
     private String imgbbApiKey;
+    @Value("${image.upload.max-size}") // 默认最大文件大小为10MB，可在配置文件中修改
+    private long MAX_SIZE;
+    @Value("${image.upload.allowed-types}") // 支持的文件类型
+    private String ALLOWED_TYPES;
 
     public Result<String> uploadImage(MultipartFile file) {
         try {
@@ -28,6 +32,19 @@ public class ImageUploadUtil {
             if (file.isEmpty()) {
                 return Result.fail("文件不能为空");
             }
+
+
+            // 检查文件大小（可在配置文件中配置）
+            if (file.getSize() > MAX_SIZE) {
+                return Result.fail("文件大小不能超过限制");
+            }
+
+            // 检查文件类型
+            String contentType = file.getContentType();
+            if (!ALLOWED_TYPES.contains(contentType)) {
+                return Result.fail("不支持的文件类型");
+            }
+
 
             // 2. 使用RestTemplate构建请求
             RestTemplate restTemplate = new RestTemplate();

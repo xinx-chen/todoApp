@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/todoappdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: root # 替换
-    password: root # 替换
+    password: Zcy010604! # 替换
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 
@@ -28,3 +28,11 @@ token:
 imgbb:
   api:
     key: key
+
+image:
+  upload:
+    max-size: 5MB           # 最大文件大小
+    allowed-types:          # 允许的文件类型
+      - image/jpeg
+      - image/png
+      - image/gif

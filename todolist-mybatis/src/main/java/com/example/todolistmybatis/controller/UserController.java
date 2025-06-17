@@ -53,6 +53,6 @@ public class UserController {
         loginResponse.setToken(token);
 
         // 登录成功，返回用户信息（可以返回JWT令牌等）
-        return Result.success(loginResponse);
+        return Result.success("登录成功",loginResponse);
     }
 }

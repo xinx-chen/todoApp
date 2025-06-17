@@ -15,10 +15,6 @@ public class TagController {
     @Autowired
     private TagService tagService;
 
-    // 移除 UserService 依赖
-    // @Autowired
-    // private UserService userService;
-
     @GetMapping("/users/{username}")
     public ResponseEntity<List<Tag>> getAllTagsByUsername(@PathVariable String username) {
         return ResponseEntity.ok(tagService.findByUsername(username));

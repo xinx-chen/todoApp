@@ -148,6 +148,7 @@ const deleteTodo = async () => {
 };
 
 const saveTodo = async (formData) => {
+  console.log('保存待办事项', formData);
   try {
     if (editingTodo.value) {
       await todoStore.updateTodo(editingTodo.value.id, formData)
